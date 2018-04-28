@@ -5,15 +5,16 @@
 #
 ########################################
 
+import random
+
 class ChordNode:
 	# Constructor
-	def __init__(self, id, m):
+	def __init__(self, id):
 		self.id = id
 		self.successor = None
 		self.predecessor = None
 		self.finger_table = {}
 		self.keys = []
-		self.m = m
 
 ## FUNCTIONS OF NODE HERE
 	def create(self):
@@ -60,6 +61,8 @@ class ChordNode:
 				self.finger_table[m - i - 1].id < id):
 				return self.finger_table[m - i - 1]
 		return self
+	def insertKey(self, id):
+		return None
 
 
 class ChordRing:
@@ -77,6 +80,19 @@ class ChordRing:
 
 def main():
 	print "hello";
+	f = open("log_file.txt", "r")
+	for line in f:
+		command = line.split(" ")
+		if command[0] == "CREATE_NODE":
+			node = ChordNode(command[1])
+			ChordRing.addNode(node)
+			node.create()
+		elif command[0] == "INSERT_NODE":
+			node = ChordNode(command[1])
+			ChordRing.addNode(node)
+			node.join(ChordRing.getNodes(random.randint(0, len(ChordRing.getNodes()))))
+		elif command[0] == "INSERT_KEY":
+
 
 
 if __name__ == "__main__": main()
