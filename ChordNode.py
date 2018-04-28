@@ -45,7 +45,7 @@ class ChordNode:
 		if (id == self.id):
 			return self
 		## end of the loop
-		if (id > self.id && self.successor.id <= self.id):
+		if (id > self.id and self.successor.id <= self.id):
 			return self.successor
 		if (id > self.id and id <= self.successor.id):
 			return self.successor
