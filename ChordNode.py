@@ -21,14 +21,21 @@ class ChordNode:
 		successor = self
 		return None	
 
-	def join(self, JoinNode):
+	def join(self, randNode):
+		self.predecessor = None
+		self.successor = randNode.find_successor(self.id)
 		return None
 
 	def stabilize(self):
+		x = self.successor.predecessor
+		if x.id > self.id and x.id < self.successor.id:
+			self.successor = x
+		self.successor.notify(self)
 		return None
 
-	def notify(self, NotifyNode):
-		return None
+	def notify(self, notifyNode):
+		if (self.predecessor == None or (notifyNode.id > self.predecessor.id and notifyNode.id < self.id)):
+			self.predecessor = notifyNode
 
 	def fix_fingers(self):
 		return None
