@@ -14,6 +14,7 @@ class ChordNode:
         self.successor = None
         self.predecessor = None
         self.finger_table = {}
+        self.isEnd = False
         self.keys = []
 
 ## FUNCTIONS OF NODE HERE
@@ -24,10 +25,15 @@ class ChordNode:
 
     def join(self, randNode):
         self.predecessor = None
-        # print("JOINING NODE IS" + str(self.id) + "RAND NODE IS " + str(randNode.id))
+        print("JOINING NODE IS" + str(self.id) + "RAND NODE IS " + str(randNode.id))
         self.successor = randNode.find_successor(self.id)
-        # print("Sucessor is now " + str(self.successor.id) + "\n")
+        self.reset_finger_table()
+        print("Sucessor is now " + str(self.successor.id) + "\n")
         return None
+
+    def printFingerTable(self):
+        for key in self.finger_table:
+            print(self.finger_table[key].id)
 
     def stabilize(self):
         # print("STABILIZING NODE " + str(self.id))
@@ -39,6 +45,9 @@ class ChordNode:
         self.successor.notify(self)
 
     def notify(self, notifyNode):
+        if self.id < notifyNode.id:
+            self.predecessor = notifyNode
+
         if (self.predecessor == None or (notifyNode.id > self.predecessor.id and notifyNode.id < self.id)):
             if self != notifyNode:
                 self.predecessor = notifyNode
@@ -50,28 +59,36 @@ class ChordNode:
         #     print("Stab node's predecessor is None")
 
 
-    def fix_fingers(self):
-        print(ChordRing.m)
+    def reset_finger_table(self):
         for i in range(0, ChordRing.m):
+            self.finger_table[i] = self.successor
+    def fix_fingers(self):
+        self.reset_finger_table()
+        for i in range(0, ChordRing.m):
+            print("FIXING NODE" + str(self.id) + " FINGER TABLE ENTRY" + str(i))
             self.finger_table[i] = self.find_successor(self.id + (1 << i))
 
     def find_successor(self, id):
         ## Node chosen is the correct node to store key in
         print(str(id) + " " + str(self.id) + " " + str(self.successor.id))
+        boo = False
+        # print(self.printFingerTable())
         if (id == self.id):
             return self
-        ## end of the loop
+        if (self == self.successor):
+            return self
         if (id > self.id and self.successor.id <= self.id):
             return self.successor
         if (id > self.id and id <= self.successor.id):
             return self.successor
         else:
             newNode = self.closest_predecessor(id);
-            newNode.find_successor(id);
-        return None
+            if newNode == self:
+                return newNode.successor.find_successor(id)
+            else:
+                return newNode.find_successor(id);
 
     def closest_predecessor(self, id):
-        print(self.finger_table)
         for i in range(ChordRing.m - 1, -1, -1):
             if (self.finger_table[i].id >= self.id and self.finger_table[i].id < id):
                 return self.finger_table[i]
@@ -107,6 +124,7 @@ def readLog():
             node.create()
             ChordRing.addNode(node)
         elif command[0] == "INSERT_NODE":
+            print("YO YO " + str(id))
             node = ChordNode(id)
             node.join(ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)])
             ChordRing.addNode(node)
@@ -121,9 +139,10 @@ def readLog():
         for node in ChordRing.getNodes():
             node.stabilize()
         for node in ChordRing.getNodes():
+            print("FIXING FINGER FOR NODE" + str(node.id))
             node.fix_fingers()
 
-    ## 23 -> 28 -> 45 -> 23
+    # 23 -> 28 -> 45 -> 23
     for node in ChordRing.getNodes():
         print(str(node.predecessor.id) + " -> " + str(node.id) + " -> " + str(node.successor.id))
 
