@@ -32,25 +32,39 @@ class ChordNode:
         return None
 
     def printFingerTable(self):
-        for key in self.finger_table:
-            print(self.finger_table[key].id)
-
+        #print("Printing " + str(self.id) + " Finger Table")
+        for key, value in self.finger_table.items():
+            print("Key " + str(key) + " Value " + str(value.id))
     def stabilize(self):
-        # print("STABILIZING NODE " + str(self.id))
+        print("STABILIZING NODE " + str(self.id))
         
         x = self.successor.predecessor
         if x != None:
-            if self == self.successor or (x.id > self.id and x.id < self.successor.id):
+            # if self == self.successor or (x.id > self.id and x.id < self.successor.id):
+            #     self.successor = x
+            if self == self.successor or (x.id != self.id and self.predecessor != None):
+                print("I AM IN " + str(self.id))
                 self.successor = x
         self.successor.notify(self)
 
     def notify(self, notifyNode):
         if self.id < notifyNode.id:
+            if (self.predecessor == None):
+                print("self.id " + str(self.id) + " previous pred is NONE")
+            else:
+                print("self.id " + str(self.id) + " previous pred " + str(self.predecessor.id))
             self.predecessor = notifyNode
+            print("self.id " + str(self.id) + " predecessor updated " + str(self.predecessor.id))
 
         if (self.predecessor == None or (notifyNode.id > self.predecessor.id and notifyNode.id < self.id)):
             if self != notifyNode:
+                if (self.predecessor == None):
+                    print("self.id " + str(self.id) + " previous pred is NONE")
+                else:
+                    print("self.id " + str(self.id) + " previous pred " + str(self.predecessor.id))
                 self.predecessor = notifyNode
+                print("self.id " + str(self.id) + " predecessor updated " + str(self.predecessor.id))
+
 
         # print("Stab node's successor is " + str(notifyNode.successor.id))
         # if notifyNode.predecessor != None:
@@ -65,18 +79,21 @@ class ChordNode:
     def fix_fingers(self):
         self.reset_finger_table()
         for i in range(0, ChordRing.m):
-            print("FIXING NODE" + str(self.id) + " FINGER TABLE ENTRY" + str(i))
-            self.finger_table[i] = self.find_successor(self.id + (1 << i))
+            #print("FIXING NODE" + str(self.id) + " FINGER TABLE ENTRY" + str(i))
+            succ = (self.id + (1 << i)) % (1 << ChordRing.m)
+            self.finger_table[i] = self.find_successor(succ)
 
     def find_successor(self, id):
         ## Node chosen is the correct node to store key in
-        print(str(id) + " " + str(self.id) + " " + str(self.successor.id))
+        #print(str(id) + " " + str(self.id) + " " + str(self.successor.id))
         boo = False
         # print(self.printFingerTable())
         if (id == self.id):
             return self
         if (self == self.successor):
             return self
+        if (id < self.successor.id and self.successor.id <= self.id):
+            return self.successor
         if (id > self.id and self.successor.id <= self.id):
             return self.successor
         if (id > self.id and id <= self.successor.id):
@@ -139,12 +156,13 @@ def readLog():
         for node in ChordRing.getNodes():
             node.stabilize()
         for node in ChordRing.getNodes():
-            print("FIXING FINGER FOR NODE" + str(node.id))
+            #print("FIXING FINGER FOR NODE" + str(node.id))
             node.fix_fingers()
 
     # 23 -> 28 -> 45 -> 23
     for node in ChordRing.getNodes():
         print(str(node.predecessor.id) + " -> " + str(node.id) + " -> " + str(node.successor.id))
+        node.printFingerTable()
 
 
 if __name__ == "__main__":
