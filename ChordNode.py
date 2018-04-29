@@ -48,15 +48,15 @@ class ChordNode:
         self.successor.notify(self)
 
     def notify(self, notifyNode):
-        if self.id < notifyNode.id:
-            if (self.predecessor == None):
-                print("self.id " + str(self.id) + " previous pred is NONE")
-            else:
-                print("self.id " + str(self.id) + " previous pred " + str(self.predecessor.id))
-            self.predecessor = notifyNode
-            print("self.id " + str(self.id) + " predecessor updated " + str(self.predecessor.id))
+        # if self.id < notifyNode.id:
+        #     if (self.predecessor == None):
+        #         print("self.id " + str(self.id) + " previous pred is NONE")
+        #     else:
+        #         print("self.id " + str(self.id) + " previous pred " + str(self.predecessor.id))
+        #     self.predecessor = notifyNode
+        #     print("self.id " + str(self.id) + " predecessor updated " + str(self.predecessor.id))
 
-        if (self.predecessor == None or (notifyNode.id > self.predecessor.id and notifyNode.id < self.id)):
+        if (self.predecessor == None or (notifyNode.id != self.predecessor.id)):
             if self != notifyNode:
                 if (self.predecessor == None):
                     print("self.id " + str(self.id) + " previous pred is NONE")
