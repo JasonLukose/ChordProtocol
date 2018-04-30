@@ -312,12 +312,13 @@ def readLog():
 
     print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
     print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) )
-    findKeysList = [17, 14, 1, 13, 12]
-    for key in findKeysList:
-        print("Finding key: " + str(key))
-        node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
-        keyExists, nodeID = node.lookup(Key(key))
-        print(str(keyExists) + " " + str(nodeID) )
+    if ChordRing.getNumNodes() >= 1:
+        findKeysList = [17, 14, 1, 13, 12]
+        for key in findKeysList:
+            print("Finding key: " + str(key))
+            node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
+            keyExists, nodeID = node.lookup(Key(key))
+            print(str(keyExists) + " " + str(nodeID) )
 
 
 

@@ -256,12 +256,18 @@ def readLog():
     ### Prints the keys within each node according to the following structure:
     ### Key is "keyId"...
     for node in ChordRing.getNodes():
-        # node.printSuccPred()
         node.printFingerTable()
         node.printKeys()
 
     print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
-    print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 
+    print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) )
+    if ChordRing.getNumNodes() >= 1:
+        findKeysList = [17, 14, 1, 13, 12]
+        for key in findKeysList:
+            print("Finding key: " + str(key))
+            node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
+            keyExists, nodeID = node.lookup(Key(key))
+            print(str(keyExists) + " " + str(nodeID) )
 
 
 
