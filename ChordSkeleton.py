@@ -180,6 +180,12 @@ class ChordNode:
                 return True
         return False
 
+    ## Looks for a Key in the Ring
+    ## lookupKey = Key Object to look for
+    ## return (if Key exists, Node key is found at)
+    def lookup(self, lookupKey):
+        return (False, None)
+
 ## Class for the key values being stored in every node
 class Key:
     def __init__(self, id):

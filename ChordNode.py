@@ -202,6 +202,13 @@ class ChordNode:
                 return True
         return False
 
+    def lookup(self, lookupKey):
+        succ = self.find_successor(lookupKey.id)
+        for key in succ.keys:
+            if (key.id == lookupKey.id):
+                return (True, succ.id)
+        return (False, None)
+
 
 class Key:
     def __init__(self, id):
@@ -246,7 +253,7 @@ def ringStabilise():
             else:
                 flag = True
 
-    print ("Number of iterations to stabilize: " + str(i))
+    #print ("Number of iterations to stabilize: " + str(i))
 
 def readLog():
     f = open("log_file.txt", "r")
@@ -292,12 +299,19 @@ def readLog():
 
 
     ringStabilise()
+
     for node in ChordRing.getNodes():
         node.printFingerTable()
         node.printKeys()
 
     print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
-    print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 
+    print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) )
+    findKeysList = [17, 14, 1, 13, 12]
+    for key in findKeysList:
+        node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
+        keyExists, nodeID = node.lookup(Key(key))
+        print(str(keyExists) + " " + str(nodeID) )
+
 
 
 # def stabilizeRing():
