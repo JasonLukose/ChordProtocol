@@ -6,7 +6,7 @@
 ########################################
 
 import random
-
+import math
 
 def keyInRange(kCheck, b1, b2):
     if (b2 > b1):
@@ -16,6 +16,81 @@ def keyInRange(kCheck, b1, b2):
         if (kCheck > b1 or kCheck < b2):
             return True
     return False
+######################################################################################
+
+##
+## Entry Point for Successor Chord Ring
+##
+
+def successorOrderedChordRing(node):
+    if (node == None):
+        return "ChordRing is empty!"
+    else:
+        orderedList = []
+        orderedList = orderedList + [node.id]
+        orderedList = orderedList + appendSuccessor(node, node.successor)
+
+    return orderedList
+
+##
+## Helper function to append the successor
+##
+
+def appendSuccessor(originalNode, currentNode):
+
+    if (originalNode == currentNode):
+        return [originalNode.id]
+    else:
+        return [currentNode.id] + appendSuccessor(originalNode, currentNode.successor)
+
+    return None
+
+##
+## Entry Point for Predecessor Chord Ring
+##
+
+def predecessorOrderedChordRing(node):
+    if (node == None):
+        return "ChordRing is empty!"
+    else:
+        orderedList = []
+        orderedList = orderedList + [node.id]
+        orderedList = orderedList + appendPredecessor(node, node.predecessor)
+
+    return orderedList
+
+##
+## Helper function to append the predecessor
+##
+
+def appendPredecessor(originalNode, currentNode):
+
+    if (currentNode == None):
+        return [None]
+    if (originalNode == currentNode):
+        return [originalNode.id]
+    else:
+        return [currentNode.id] + appendPredecessor(originalNode, currentNode.predecessor)
+
+    return None
+
+##
+## Helper function to find Min Node of a Chord Ring
+##
+
+def findMinNode():
+    minNode = None
+
+    for node in ChordRing.getNodes():
+        if minNode == None:
+            minNode = node
+        else:
+            if node.id < minNode.id:
+                minNode = node
+
+    return minNode
+    
+######################################################################################
 
 class ChordNode:
     # Constructor
@@ -155,39 +230,48 @@ def readLog():
         if command[0] == "CREATE_NODE":
             node = ChordNode(id)
             node.create()
-            node.stabilize()
-            node.fix_fingers() 
+            # node.stabilize()
+            # node.fix_fingers() 
             ChordRing.addNode(node)
         elif command[0] == "INSERT_NODE":
             node = ChordNode(id)
             node.join(ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)])
             ChordRing.addNode(node)
-            node.stabilize()
-            node.fix_fingers() 
+            # node.stabilize()
+            # node.fix_fingers() 
         elif command[0] == "INSERT_KEY":
             k = Key(id)
             node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
             node.insertKey(k)
         else:
             pass
+    
     flag = True
     i = 0
-    while flag:
-        i = i + 1
-        for node in ChordRing.getNodes():
-            node.stabilize()
-            node.fix_fingers()
+    while ( flag and ChordRing.getNumNodes() > 1 ):
+        i = i+1
+        r = list(range(ChordRing.getNumNodes()))
+        random.shuffle(r)
+        newR = r[0: math.ceil(ChordRing.getNumNodes()/2)]
+        #print(newR)
+        for j in newR:
+            ChordRing.getNodes()[j].stabilize()
+            ChordRing.getNodes()[j].fix_fingers()
+
         flag = False
         for node in ChordRing.getNodes():
-            if node.successor != None and node.predecessor != None:
+            if node.predecessor != None and node.successor != None:
                 pass
             else:
                 flag = True
-    print (i)
-    for node in ChordRing.getNodes():
-        node.printSuccPred()
-        node.printFingerTable()
-        node.printKeys()
+
+    print ("Number of iterations to stabilize: " + str(i))
+    #for node in ChordRing.getNodes():
+        #node.printSuccPred()
+        #node.printFingerTable()
+        #node.printKeys()
+    print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
+    print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 
 
 
 
