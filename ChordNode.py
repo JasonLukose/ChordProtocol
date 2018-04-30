@@ -7,6 +7,8 @@
 
 import random
 import math
+import time
+import threading
 
 def keyInRange(kCheck, b1, b2):
     if (b2 > b1):
@@ -181,7 +183,14 @@ class ChordNode:
 
     def insertKey(self, key):
         succ = self.find_successor(key.id)
+        # if succ != self and self.containsKey(key):
+        #     self.keys = [i for i in self.keys if i.id != key.id]
         succ.keys.append(key)
+    def containsKey(self, key):
+        for k in self.keys:
+            if k.id == key.id:
+                return True
+        return False
 
 
 class Key:
@@ -204,62 +213,95 @@ class ChordRing:
     def getNumNodes():
         return len(ChordRing.nodeList)
 
+mainFlag = False
 def readLog():
     f = open("log_file.txt", "r")
     ChordRing.setM(6)
+    # stabilizeRing()
     for line in f:
         command = line.rstrip().split(" ")
         id = int(command[1])
         if command[0] == "CREATE_NODE":
             node = ChordNode(id)
             node.create()
-            # node.stabilize()
-            # node.fix_fingers() 
             ChordRing.addNode(node)
         elif command[0] == "INSERT_NODE":
             node = ChordNode(id)
             node.join(ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)])
+            node.stabilize()
+            node.fix_fingers()
+            for n in ChordRing.getNodes():
+                n.stabilize()
+                n.fix_fingers()
             ChordRing.addNode(node)
-            # node.stabilize()
-            # node.fix_fingers() 
+            
         elif command[0] == "INSERT_KEY":
             k = Key(id)
             node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
             node.insertKey(k)
         else:
             pass
+
+    # mainFlag = True
     
-    flag = True
-    i = 0
-    while ( flag and ChordRing.getNumNodes() > 1 ):
-        i = i+1
-        r = list(range(ChordRing.getNumNodes()))
-        random.shuffle(r)
-        newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
-        for j in newR:
-            ChordRing.getNodes()[j].stabilize()
+    # flag = True
+    # i = 0
+    # while ( flag and ChordRing.getNumNodes() > 1 ):
+    #     i = i+1
+    #     r = list(range(ChordRing.getNumNodes()))
+    #     random.shuffle(r)
+    #     newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
+    #     for j in newR:
+    #         ChordRing.getNodes()[j].stabilize()
 
-        random.shuffle(r)
-        newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
-        for k in newR:
-            ChordRing.getNodes()[j].fix_fingers()
+    #     random.shuffle(r)
+    #     newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
+    #     for k in newR:
+    #         ChordRing.getNodes()[j].fix_fingers()
 
-        flag = False
-        for node in ChordRing.getNodes():
-            if node.predecessor != None and node.successor != None:
-                pass
-            else:
-                flag = True
-
-    print ("Number of iterations to stabilize: " + str(i))
+    #     flag = False
+    #     for node in ChordRing.getNodes():
+    #         if node.predecessor != None and node.successor != None:
+    #             pass
+    #         else:
+    #             flag = True
+    # for node in ChordRing.getNodes():
+    #     print(node.id)
+    #     for key in node.keys:
+    #         print(key.id)
+    #         node.insertKey(key)
+    # flag = True
+    # i = 0
+    # while (flag):
+    #     i = i + 1
+    #     flag = False
+    #     for node in ChordRing.getNodes():
+    #         if node.successor != None and node.predecessor != None:
+    #             pass
+    #         else:
+    #             flag = True
     for node in ChordRing.getNodes():
-        # node.printSuccPred()
         node.printFingerTable()
         node.printKeys()
 
     print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
     print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 
 
+
+# def stabilizeRing():
+#     print(time.ctime())
+#     flag = False
+#     for node in ChordRing.getNodes():
+#         if node.successor != None and node.predecessor != None:
+#             pass
+#         else:
+#             flag = True
+#         node.stabilize()
+#         node.fix_fingers()
+#     if flag == False and mainFlag == True:
+#         pass
+#     else:
+#         threading.Timer(0.05, stabilizeRing).start()
 
 
 if __name__ == "__main__":
