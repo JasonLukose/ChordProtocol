@@ -120,17 +120,16 @@ class ChordNode:
 
     ### FILL IN THE CODE FOR ALL THESE FUNCTIONS BELOW
 
-    ## A function that creates the node ring with the node that calls this function
+    ## A node that reates the node ring with the node that calls this function
     def create(self):
         return None
 
-    ## A function that allows a node to join the ring. The node that calls the function joins 
-    ## the ring
+    ## Node calls this to join the ring.
     ## randNode: is a random node out of all the nodes in your ChordRing
     def join(self, randNode):
         return None
 
-    ## A function that stabilizes the node that calls it
+    ## Node calls this to stabilize
     def stabilize(self):
         return None
 
@@ -149,10 +148,14 @@ class ChordNode:
     def fix_fingers(self):
         return None
 
-    ## finds the successor of a specific id in the Chord ring
+    ## Finds the successor of a specific id in the Chord ring
     ## Uses the node that calls this to find the successor of the id in the parameter
     ## id: the id to the find the successor for
     def find_successor(self, id):
+        return None
+
+    ## What happens when a node leaves
+    def leave(self):
         return None
 
     ## Given an id, finds the closest predecessor node of that id
@@ -164,11 +167,25 @@ class ChordNode:
     def insertKey(self, key):
         return None
 
+    ## Gives the keys from the leaving node to its successor
+    ## predecessorKeys: The list of keys to give to its successor 
+    def receiveKeys(self, predecessorKeys):
+        return None
 
+    ## Checks a node if it contains a key
+    ## key: The key to check for
+    def containsKey(self, key):
+        for k in self.keys:
+            if k.id == key.id:
+                return True
+        return False
+
+## Class for the key values being stored in every node
 class Key:
     def __init__(self, id):
         self.id = id
 
+## Static class for the chord ring
 class ChordRing:
     m = 4
     nodeList = []
@@ -215,6 +232,17 @@ def readLog():
             ### FILL IN YOUR CODE#####
 
             ##########################
+        elif command[0] = "LEAVE_NODE":
+            ## Code that finds out whether the node exists in the ring
+            currNode = None
+            for node in ChordRing.getNodes():
+                if node.id == id:
+                    currNode = node
+            ### FILL IN YOUR CODE#####
+
+            ##########################
+            ## MAKE SURE TO REMOVE THE NODE FROM THE CHORDRING STATIC CLASS
+        
 
     ### Prints out the final chord ring according to final structure:
     ### node.predecessor -> node -> node.successor

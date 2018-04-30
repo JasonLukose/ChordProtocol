@@ -116,13 +116,14 @@ class ChordNode:
         indToRm = []
         for i in range(0, len(self.successor.keys)):
             if self.successor.keys[i].id <= self.id:
-                indToRm.append(i)
+                indToRm.append(self.successor.keys[i])
                 self.keys.append(self.successor.keys[i])
         for i in indToRm:
-            del self.successor.keys[i]
+            self.successor.keys.remove(i)
         return None
 
     def printFingerTable(self):
+        print("Finger table for ID IS: " + str(self.id))
         for key, value in self.finger_table.items():
             print("Finger " + str(key) + " Value " + str(value.id))
 
@@ -175,6 +176,12 @@ class ChordNode:
             else:
                 return newNode.find_successor(id);
 
+    def leave(self):
+        if (self.predecessor != None):
+            self.predecessor.successor = self.successor
+        self.successor.predecessor = self.predecessor
+        self.successor.receiveKeys(self.keys)
+
     def closest_predecessor(self, id):
         for i in range(ChordRing.m - 1, -1, -1):
             if (self.finger_table[i].id >= self.id and self.finger_table[i].id < id):
@@ -183,9 +190,12 @@ class ChordNode:
 
     def insertKey(self, key):
         succ = self.find_successor(key.id)
-        # if succ != self and self.containsKey(key):
-        #     self.keys = [i for i in self.keys if i.id != key.id]
         succ.keys.append(key)
+
+    def receiveKeys(self, predecessorKeys):
+        for key in predecessorKeys:
+            self.keys.append(key)
+
     def containsKey(self, key):
         for k in self.keys:
             if k.id == key.id:
@@ -213,7 +223,31 @@ class ChordRing:
     def getNumNodes():
         return len(ChordRing.nodeList)
 
-mainFlag = False
+def ringStabilise():
+    flag = True
+    i = 0
+    while ( flag and ChordRing.getNumNodes() > 1 ):
+        i = i+1
+        r = list(range(ChordRing.getNumNodes()))
+        random.shuffle(r)
+        newR = r[0: int(math.ceil(ChordRing.getNumNodes()))]
+        for j in newR:
+            ChordRing.getNodes()[j].stabilize()
+
+        random.shuffle(r)
+        newR = r[0: int(math.ceil(ChordRing.getNumNodes()))]
+        for k in newR:
+            ChordRing.getNodes()[k].fix_fingers()
+
+        flag = False
+        for node in ChordRing.getNodes():
+            if node.predecessor != None and node.successor != None:
+                pass
+            else:
+                flag = True
+
+    print ("Number of iterations to stabilize: " + str(i))
+
 def readLog():
     f = open("log_file.txt", "r")
     ChordRing.setM(6)
@@ -228,58 +262,36 @@ def readLog():
         elif command[0] == "INSERT_NODE":
             node = ChordNode(id)
             node.join(ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)])
-            node.stabilize()
-            node.fix_fingers()
-            for n in ChordRing.getNodes():
-                n.stabilize()
-                n.fix_fingers()
+            # node.stabilize()
+            # node.fix_fingers()
+            # for n in ChordRing.getNodes():
+            #     n.stabilize()
+            #     n.fix_fingers()
             ChordRing.addNode(node)
             
         elif command[0] == "INSERT_KEY":
             k = Key(id)
             node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
+            ringStabilise()
             node.insertKey(k)
+
+        elif command[0] == "LEAVE_NODE":
+            currNode = None
+            for node in ChordRing.getNodes():
+                if node.id == id:
+                    currNode = node
+            if currNode != None:
+                currNode.leave()
+                ChordRing.getNodes().remove(currNode)
+                # for n in ChordRing.getNodes():
+                #     n.stabilize()
+                #     n.fix_fingers()
+
         else:
             pass
 
-    # mainFlag = True
-    
-    # flag = True
-    # i = 0
-    # while ( flag and ChordRing.getNumNodes() > 1 ):
-    #     i = i+1
-    #     r = list(range(ChordRing.getNumNodes()))
-    #     random.shuffle(r)
-    #     newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
-    #     for j in newR:
-    #         ChordRing.getNodes()[j].stabilize()
 
-    #     random.shuffle(r)
-    #     newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
-    #     for k in newR:
-    #         ChordRing.getNodes()[j].fix_fingers()
-
-    #     flag = False
-    #     for node in ChordRing.getNodes():
-    #         if node.predecessor != None and node.successor != None:
-    #             pass
-    #         else:
-    #             flag = True
-    # for node in ChordRing.getNodes():
-    #     print(node.id)
-    #     for key in node.keys:
-    #         print(key.id)
-    #         node.insertKey(key)
-    # flag = True
-    # i = 0
-    # while (flag):
-    #     i = i + 1
-    #     flag = False
-    #     for node in ChordRing.getNodes():
-    #         if node.successor != None and node.predecessor != None:
-    #             pass
-    #         else:
-    #             flag = True
+    ringStabilise()
     for node in ChordRing.getNodes():
         node.printFingerTable()
         node.printKeys()
