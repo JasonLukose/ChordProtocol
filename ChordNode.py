@@ -122,7 +122,7 @@ class ChordNode:
 
     def printFingerTable(self):
         for key, value in self.finger_table.items():
-            print("Key " + str(key) + " Value " + str(value.id))
+            print("Finger " + str(key) + " Value " + str(value.id))
 
     def printKeys(self):
         print("Keys for id: " + str(self.id))
@@ -235,14 +235,12 @@ def readLog():
         i = i+1
         r = list(range(ChordRing.getNumNodes()))
         random.shuffle(r)
-        newR = r[0: math.ceil(ChordRing.getNumNodes()/2)]
-        #print("Stabilizing  nodes: " + str(newR))
+        newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
         for j in newR:
             ChordRing.getNodes()[j].stabilize()
 
         random.shuffle(r)
-        newR = r[0: math.ceil(ChordRing.getNumNodes()/2)]
-        #print("Fixing Fingers for nodes : " + str(newR))
+        newR = r[0: int(math.ceil(ChordRing.getNumNodes()/2))]
         for k in newR:
             ChordRing.getNodes()[j].fix_fingers()
 
@@ -254,10 +252,10 @@ def readLog():
                 flag = True
 
     print ("Number of iterations to stabilize: " + str(i))
-    #for node in ChordRing.getNodes():
-        #node.printSuccPred()
-        #node.printFingerTable()
-        #node.printKeys()
+    for node in ChordRing.getNodes():
+        # node.printSuccPred()
+        node.printFingerTable()
+        node.printKeys()
 
     print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
     print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 

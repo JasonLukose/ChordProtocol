@@ -31,9 +31,15 @@ def successorOrderedChordRing(node):
 def appendSuccessor(originalNode, currentNode):
 
     if (originalNode == currentNode):
-        return [originalNode.id]
+        if originalNode == None:
+            return [None]
+        else:
+            return [originalNode.id]
     else:
-        return [currentNode.id] + appendSuccessor(originalNode, currentNode.successor)
+        if currentNode == None:
+            return [None]
+        else:
+            return [currentNode.id] + appendSuccessor(originalNode, currentNode.successor)
 
     return None
 
@@ -102,7 +108,7 @@ class ChordNode:
 
     def printFingerTable(self):
         for key, value in self.finger_table.items():
-            print("Key " + str(key) + " Value " + str(value.id))
+            print("Finger " + str(key) + " Value " + str(value.id))
 
     def printKeys(self):
         print("Keys for id: " + str(self.id))
@@ -111,6 +117,8 @@ class ChordNode:
 
     def printSuccPred(self):
         print(str(self.predecessor.id) + " -> " + str(self.id) + " -> " + str(self.successor.id))
+
+    ### FILL IN THE CODE FOR ALL THESE FUNCTIONS BELOW
 
     ## A function that creates the node ring with the node that calls this function
     def create(self):
@@ -215,9 +223,12 @@ def readLog():
     ### Prints the keys within each node according to the following structure:
     ### Key is "keyId"...
     for node in ChordRing.getNodes():
-        node.printSuccPred()
+        # node.printSuccPred()
         node.printFingerTable()
         node.printKeys()
+
+    print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
+    print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 
 
 
 
