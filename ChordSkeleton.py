@@ -1,11 +1,94 @@
-########################################
-#
-# Chord Node - Quick Chord Simulation
-# Written By: Jason Lukose and Ganapathy Hari Narayan
-#
-########################################
+##############################################################
+#                                                            #
+#           Chord Node - Quick Chord Simulation              #
+#     Written By: Jason Lukose and Ganapathy Hari Narayan    #
+#                                                            #
+##############################################################
 
 import random
+import math
+
+######################################################################################
+
+##
+## Entry Point for Successor Chord Ring
+##
+
+def successorOrderedChordRing(node):
+    if (node == None):
+        return "ChordRing is empty!"
+    else:
+        orderedList = []
+        orderedList = orderedList + [node.id]
+        orderedList = orderedList + appendSuccessor(node, node.successor)
+
+    return orderedList
+
+##
+## Helper function to append the successor
+##
+
+def appendSuccessor(originalNode, currentNode):
+
+    if (originalNode == currentNode):
+        return [originalNode.id]
+    else:
+        return [currentNode.id] + appendSuccessor(originalNode, currentNode.successor)
+
+    return None
+
+##
+## Entry Point for Predecessor Chord Ring
+##
+
+def predecessorOrderedChordRing(node):
+    if (node == None):
+        return "ChordRing is empty!"
+    else:
+        orderedList = []
+        orderedList = orderedList + [node.id]
+        orderedList = orderedList + appendPredecessor(node, node.predecessor)
+
+    return orderedList
+
+##
+## Helper function to append the predecessor
+##
+
+def appendPredecessor(originalNode, currentNode):
+
+    if (currentNode == None):
+        return [None]
+    if (originalNode == currentNode):
+        return [originalNode.id]
+    else:
+        return [currentNode.id] + appendPredecessor(originalNode, currentNode.predecessor)
+
+    return None
+
+##
+## Helper function to find Min Node of a Chord Ring
+##
+
+def findMinNode():
+    minNode = None
+
+    for node in ChordRing.getNodes():
+        if minNode == None:
+            minNode = node
+        else:
+            if node.id < minNode.id:
+                minNode = node
+
+    return minNode
+
+######################################################################################
+
+##############################################################
+#                                                            #
+#                   NO CODE ABOVE THIS BOX                   #
+#                                                            #
+##############################################################
 
 class ChordNode:
     # Constructor

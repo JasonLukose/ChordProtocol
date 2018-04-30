@@ -1,9 +1,9 @@
-########################################
-#
-# Chord Node - Quick Chord Simulation
-# Written By: Jason Lukose and Ganapathy Hari Narayan
-#
-########################################
+##############################################################
+#                                                            #
+#           Chord Node - Quick Chord Simulation              #
+#     Written By: Jason Lukose and Ganapathy Hari Narayan    #
+#                                                            #
+##############################################################
 
 import random
 import math
@@ -89,7 +89,7 @@ def findMinNode():
                 minNode = node
 
     return minNode
-    
+
 ######################################################################################
 
 class ChordNode:
@@ -99,21 +99,18 @@ class ChordNode:
         self.successor = None
         self.predecessor = None
         self.finger_table = {}
-        self.isEnd = False
         self.keys = []
 
 ## FUNCTIONS OF NODE HERE
     def create(self):
         self.predecessor = None
         self.successor = self
-        return None 
+        self.reset_finger_table()
 
     def join(self, randNode):
         self.predecessor = None
-        # print("JOINING NODE IS" + str(self.id) + "RAND NODE IS " + str(randNode.id))
         self.successor = randNode.find_successor(self.id)
         self.reset_finger_table()
-        # print("Sucessor is now " + str(self.successor.id) + "\n")
         indToRm = []
         for i in range(0, len(self.successor.keys)):
             if self.successor.keys[i].id <= self.id:
@@ -131,48 +128,34 @@ class ChordNode:
         print("Keys for id: " + str(self.id))
         for k in self.keys:
             print(k.id)
+
     def printSuccPred(self):
         print(str(self.predecessor.id) + " -> " + str(self.id) + " -> " + str(self.successor.id))
 
     def stabilize(self):
-        
         x = self.successor.predecessor
-
         if x != None:
-            # print( "MY PRED IS " + str(x.id))
-            # if self == self.successor or (x.id != self.id and self.predecessor != None):
-            #     # print("I AM IN " + str(self.id))
-            #     self.successor = x
             if self == self.successor or keyInRange(x.id, self.id, self.successor.id):
                 self.successor = x
         self.successor.notify(self)
 
     def notify(self, notifyNode):
-
         if (self.predecessor == None or (notifyNode.id != self.predecessor)):
             if self != notifyNode:
-                if (self.predecessor == None):
-                    pass
-                    # print("self.id " + str(self.id) + " previous pred is NONE")
-                else:
-                    pass
-                    # print("self.id " + str(self.id) + " previous pred " + str(self.predecessor.id))
                 self.predecessor = notifyNode
-                # print("self.id " + str(self.id) + " predecessor updated " + str(self.predecessor.id))
 
 
     def reset_finger_table(self):
         for i in range(0, ChordRing.m):
             self.finger_table[i] = self.successor
+
     def fix_fingers(self):
         self.reset_finger_table()
         for i in range(0, ChordRing.m):
-            #print("FIXING NODE" + str(self.id) + " FINGER TABLE ENTRY" + str(i))
             succ = (self.id + (1 << i)) % (1 << ChordRing.m)
             self.finger_table[i] = self.find_successor(succ)
 
     def find_successor(self, id):
-        boo = False
         if (id == self.id):
             return self
         if (self == self.successor):
@@ -195,10 +178,10 @@ class ChordNode:
             if (self.finger_table[i].id >= self.id and self.finger_table[i].id < id):
                 return self.finger_table[i]
         return self
+
     def insertKey(self, key):
         succ = self.find_successor(key.id)
         succ.keys.append(key)
-        return None
 
 
 class Key:
@@ -253,9 +236,14 @@ def readLog():
         r = list(range(ChordRing.getNumNodes()))
         random.shuffle(r)
         newR = r[0: math.ceil(ChordRing.getNumNodes()/2)]
-        #print(newR)
+        #print("Stabilizing  nodes: " + str(newR))
         for j in newR:
             ChordRing.getNodes()[j].stabilize()
+
+        random.shuffle(r)
+        newR = r[0: math.ceil(ChordRing.getNumNodes()/2)]
+        #print("Fixing Fingers for nodes : " + str(newR))
+        for k in newR:
             ChordRing.getNodes()[j].fix_fingers()
 
         flag = False
@@ -270,6 +258,7 @@ def readLog():
         #node.printSuccPred()
         #node.printFingerTable()
         #node.printKeys()
+
     print("Successor Ring : " + str(successorOrderedChordRing(findMinNode())) )
     print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) ) 
 
