@@ -7,8 +7,7 @@
 
 import random
 import math
-import time
-import threading
+import sys
 
 def keyInRange(kCheck, b1, b2):
     if (b2 > b1):
@@ -179,7 +178,7 @@ class ChordNode:
     def leave(self):
         if (self.predecessor != None):
             self.predecessor.successor = self.successor
-        self.successor.predecessor = self.predecessor
+        self.successor.predecessor = None
         self.successor.receiveKeys(self.keys)
 
     def closest_predecessor(self, id):
@@ -256,7 +255,12 @@ def ringStabilise():
     #print ("Number of iterations to stabilize: " + str(i))
 
 def readLog():
-    f = open("log_file.txt", "r")
+    if len(sys.argv) > 1:
+        file = sys.argv[1]
+    else:
+        file = "log_file.txt"
+        
+    f = open(file, "r")
     ChordRing.setM(6)
     # stabilizeRing()
     for line in f:
@@ -269,8 +273,8 @@ def readLog():
         elif command[0] == "INSERT_NODE":
             node = ChordNode(id)
             node.join(ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)])
-            # node.stabilize()
-            # node.fix_fingers()
+            node.stabilize()
+            node.fix_fingers()
             # for n in ChordRing.getNodes():
             #     n.stabilize()
             #     n.fix_fingers()
@@ -288,6 +292,7 @@ def readLog():
                 if node.id == id:
                     currNode = node
             if currNode != None:
+                ringStabilise()
                 currNode.leave()
                 ChordRing.getNodes().remove(currNode)
                 # for n in ChordRing.getNodes():
@@ -301,6 +306,7 @@ def readLog():
     ringStabilise()
 
     for node in ChordRing.getNodes():
+        # node.printSuccPred()
         node.printFingerTable()
         node.printKeys()
 
@@ -308,6 +314,7 @@ def readLog():
     print("Predecessor Ring : " + str(predecessorOrderedChordRing(findMinNode())) )
     findKeysList = [17, 14, 1, 13, 12]
     for key in findKeysList:
+        print("Finding key: " + str(key))
         node = ChordRing.getNodes()[random.randint(0, ChordRing.getNumNodes() - 1)]
         keyExists, nodeID = node.lookup(Key(key))
         print(str(keyExists) + " " + str(nodeID) )

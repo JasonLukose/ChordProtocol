@@ -103,7 +103,6 @@ class ChordNode:
         self.successor = None
         self.predecessor = None
         self.finger_table = {}
-        self.isEnd = False
         self.keys = []
 
     def printFingerTable(self):
