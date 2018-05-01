@@ -252,8 +252,6 @@ def ringStabilise():
             else:
                 flag = True
 
-    #print ("Number of iterations to stabilize: " + str(i))
-
 def readLog():
     if len(sys.argv) > 1:
         file = sys.argv[1]
@@ -306,7 +304,6 @@ def readLog():
     ringStabilise()
 
     for node in ChordRing.getNodes():
-        # node.printSuccPred()
         node.printFingerTable()
         node.printKeys()
 

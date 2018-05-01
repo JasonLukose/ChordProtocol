@@ -5,6 +5,9 @@
 #                                                            #
 ##############################################################
 
+## STUDENT NAME:
+## STUDENT GT ID:
+
 import random
 import math
 
@@ -208,7 +211,11 @@ class ChordRing:
         return len(ChordRing.nodeList)
 
 def readLog():
-    f = open("log_file.txt", "r")
+    if len(sys.argv) > 1:
+        file = sys.argv[1]
+    else:
+        file = "log_file.txt"
+    f = open(file, "r")
     ChordRing.setM(6)
     for line in f:
         command = line.rstrip().split(" ")
